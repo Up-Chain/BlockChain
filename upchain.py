@@ -589,3 +589,51 @@ class Blockchain:
 # We create an instance of the Blockchain class with the following parameters:
 # difficulty - 4, reward - 10
 up_chain = Blockchain(4, 10)
+
+# Class to represent smart contracts
+class SmartContract:
+
+    # Class constructor
+    def __init__(self, code, sender, gas_limit):
+        self.code = code # Smart contract code
+        self.sender = sender # Smart contract sender address
+        self.gas_limit = gas_limit # Gas limit for smart contract execution
+        self.gas_used = 0 # The amount of gas used when executing a smart contract
+        self.state = {} # Smart contract status
+
+    # Method for executing a smart contract
+    def execute(self, blockchain, transaction):
+        # Checking that the gas limit has not been exceeded
+        if self.gas_used > self.gas_limit:
+            return False, "Gas limit exceeded"
+
+        # Execute smart contract code in a secure environment
+        try:
+            exec(self.code, globals(), locals())
+        except Exception as e:
+            return False, "Smart contract execution error: " + str(e)
+
+        # Updating the state of the smart contract
+        self.state = locals()
+
+        # Returning the result of smart contract execution
+        return True, "Smart contract executed successfully"
+
+# Function for creating a smart contract
+def create_smart_contract(code, sender, gas_limit):
+    # Create an instance of the SmartContract class
+    smart_contract = SmartContract(code, sender, gas_limit)
+
+    # Adding a smart contract to the list of blockchain smart contracts
+    blockchain.smart_contracts.append(smart_contract)
+
+    # Returning the smart contract
+    return smart_contract
+
+# Function for calling a smart contract
+def call_smart_contract(smart_contract, blockchain, transaction):
+    # We execute a smart contract
+    result, message = smart_contract.execute(blockchain, transaction)
+
+    # Returning the result and message
+    return result, message
